@@ -6,8 +6,22 @@ import pandas as pd
 import plotly.graph_objs as go
 
 app = dash.Dash()
+
 df = pd.read_csv('data.csv')
 a = df['periodic_target'].unique()
+
+def generate_table(dataframe, max_rows=10):
+    return html.Table(
+        # Header
+        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+
+        # Body
+        [html.Tr([
+            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+        ]) for i in range(min(len(dataframe), max_rows))]
+    )
+
+
 
 app.layout = html.Div([
     dcc.Dropdown(
@@ -16,9 +30,13 @@ app.layout = html.Div([
         multi=False,
         id='dropdown'
     ),
-    dcc.Graph(id = 'my-graph')
+    dcc.Graph(id = 'my-graph'),
+    html.Div(children=[
+        html.H4(children='US Agriculture Exports (2011)'),
+        generate_table(df.head())
+        ])
 
-])
+    ])
 
 @app.callback(Output('my-graph', 'figure'), [Input('dropdown', 'value')])
 def update_graph(value):
@@ -48,6 +66,8 @@ def update_graph(value):
         )
         ]
     }
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8550)
