@@ -9,9 +9,9 @@ import os
 app = dash.Dash(__name__)
 server = app.server
 
-df = pd.read_csv('data.csv')
-a = df['periodic_target'].unique()
-activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']
+df = pd.read_csv('data.csv')#reading file to get month names
+a = df['periodic_target'].unique()# Month names
+activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# HARDCODING ACTIVITEES FOR NOW
 
 
 def generate_table(dataframe, max_rows=10):
@@ -46,9 +46,9 @@ app.layout = html.Div([
         multi=False,
         id='dropdown-activity'
     ),
-    dcc.Graph(id = 'my-graph'),
-    dcc.Graph(id = 'my-table'),
-    dcc.Graph(id = 'new-table')
+    dcc.Graph(id = 'my-graph'),# bar graph
+    dcc.Graph(id = 'my-table'),# table 1
+    dcc.Graph(id = 'new-table')# Table 2
 
     ])
 
@@ -100,7 +100,7 @@ def update_table(value):
 
 
 
-
+# Table 3 uses 2 dropdowns so calling 2 inputs
 @app.callback(Output('new-table', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
 def update_new_tab(year, month, activity):
     year = int(year)
@@ -133,7 +133,7 @@ def update_new_tab(year, month, activity):
         dfc = pd.DataFrame(dfc)
         dfc.insert(loc=0, column='Activity', value=activity_arr[i])
         df_final = df_final.append(dfc)
-    df_final.to_csv('tmp.csv')
+    df_final.to_csv('tmp.csv')# saving the file as temporary one as the ff does not display the row names
     df_display = pd.read_csv('tmp.csv')
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
     df_display = df_display[df_display['Activity'] == activity]
