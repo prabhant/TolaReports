@@ -1,3 +1,5 @@
 *.csv
 
 *.ipynb
+
+ideal_app\.py
