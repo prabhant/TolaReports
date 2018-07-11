@@ -9,22 +9,9 @@ import os
 app = dash.Dash(__name__)
 server = app.server
 
-df = pd.read_csv('data.csv')
-a = df['periodic_target'].unique()
-activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']
-
-
-def generate_table(dataframe, max_rows=10):
-    return html.Table(
-        # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
-
-        # Body
-        [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-        ]) for i in range(min(len(dataframe), max_rows))]
-    )
-
+df = pd.read_csv('data.csv')# loading csv here for month array
+a = df['periodic_target'].unique()# month array
+activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# activity array
 
 
 app.layout = html.Div([
@@ -46,13 +33,13 @@ app.layout = html.Div([
         multi=False,
         id='dropdown-activity'
     ),
-    dcc.Graph(id = 'my-graph'),
-    dcc.Graph(id = 'my-table'),
-    dcc.Graph(id = 'new-table')
+    dcc.Graph(id = 'my-graph'),# Bar graph
+    dcc.Graph(id = 'my-table'),# Table 1
+    dcc.Graph(id = 'new-table')# Table 2
 
     ])
 
-@app.callback(Output('my-graph', 'figure'), [Input('dropdown-month', 'value')])
+@app.callback(Output('my-graph', 'figure'), [Input('dropdown-month', 'value')])# Callback for bar graph
 def update_graph(value):
     df = pd.read_csv('data.csv')
     y1 = []
@@ -82,9 +69,9 @@ def update_graph(value):
         ]
     }
 
-@app.callback(Output('my-table', 'figure'), [Input('dropdown-month', 'value')])
+@app.callback(Output('my-table', 'figure'), [Input('dropdown-month', 'value')])# Callback for table 1 using only month
 def update_table(value):
-    df = pd.read_csv('data.csv')
+    df = pd.read_csv('data.csv')# Reading the csv again because using global objects can break dash app
     y1 = []
     y2 = []
     indname = []
@@ -95,12 +82,12 @@ def update_table(value):
             y2.append(df['lop_target'].iloc[i])
 
     dff = pd.DataFrame({'Indicator name': indname, 'achieved': y1, 'target': y2})
-    df_fig = ff.create_table(dff)
+    df_fig = ff.create_table(dff)# Figure factory to create plotly graph
     return df_fig
 
 
 
-
+# 3rd callback using 2nd and 3rd dropdown to create table - 3
 @app.callback(Output('new-table', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
 def update_new_tab(year, month, activity):
     year = int(year)
@@ -133,14 +120,14 @@ def update_new_tab(year, month, activity):
         dfc = pd.DataFrame(dfc)
         dfc.insert(loc=0, column='Activity', value=activity_arr[i])
         df_final = df_final.append(dfc)
-    df_final.to_csv('tmp.csv')
-    df_display = pd.read_csv('tmp.csv')
-    df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
+    df_final.to_csv('tmp.csv')# saving file again because fig factory doesnot print row index by groupby
+    df_display = pd.read_csv('tmp.csv')#loading it again
+    df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]# displaying only these 4 elements right now
     df_display = df_display[df_display['Activity'] == activity]
     df_display = df_display[['Gender', 'Age cohorts', 'District', '0']]
     tab = ff.create_table(df_display)
-    return  tab
+    return tab
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8560)
+    app.run_server(debug=True)
