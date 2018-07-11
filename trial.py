@@ -10,6 +10,8 @@ app = dash.Dash()
 
 df = pd.read_csv('data.csv')
 a = df['periodic_target'].unique()
+activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']
+
 
 def generate_table(dataframe, max_rows=10):
     return html.Table(
@@ -37,9 +39,14 @@ app.layout = html.Div([
         multi=False,
         id='dropdown-year'
     ),
+    dcc.Dropdown(
+        value=['id mob'],
+        options=[{'label': i, 'value': i} for i in list(activity_arr)],
+        multi=False,
+        id='dropdown-activity'
+    ),
     dcc.Graph(id = 'my-graph'),
     dcc.Graph(id = 'my-table'),
-    dcc.Graph(id = 'groupby-table'),
     dcc.Graph(id = 'new-table')
 
     ])
@@ -90,20 +97,11 @@ def update_table(value):
     df_fig = ff.create_table(dff)
     return df_fig
 
-@app.callback(Output('groupby-table', 'figure'), [Input('dropdown-month', 'value')])
-def update_groupby_table(value):
-    df_combine = pd.read_csv('combine.csv')
-    df_combine = df_combine[df_combine['Month'] == value]
-    dfc = df_combine.groupby(['Gender', 'Age Category', 'Activity']).size()
-    dfc = pd.DataFrame(dfc)
-    dfc.to_csv('dfc.csv')
-    dff = pd.read_csv('dfc.csv')
-    new_tab = ff.create_table(dff)
-    return new_tab
 
 
-@app.callback(Output('new-table', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value')])
-def update_new_tab(year, month):
+
+@app.callback(Output('new-table', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
+def update_new_tab(year, month, activity):
     year = int(year)
     df = pd.read_csv('new_report.csv')
     df = df.drop(df.columns[31], axis=1)
@@ -130,13 +128,15 @@ def update_new_tab(year, month):
     df_final = pd.DataFrame()
     for i in range(len(activity_arr)):
         dfc = df_arr[i]
-        dfc = dfc.groupby(['Gender', 'Age cohorts']).size()
+        dfc = dfc.groupby(['Gender', 'Age cohorts','District']).size()
         dfc = pd.DataFrame(dfc)
         dfc.insert(loc=0, column='Activity', value=activity_arr[i])
         df_final = df_final.append(dfc)
     df_final.to_csv('tmp.csv')
     df_display = pd.read_csv('tmp.csv')
-    df_display = df_display[['Activity', 'Gender', 'Age cohorts', '0']]
+    df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
+    df_display = df_display[df_display['Activity'] == activity]
+    df_display = df_display[['Gender', 'Age cohorts', 'District', '0']]
     tab = ff.create_table(df_display)
     return  tab
 
