@@ -3,3 +3,5 @@
 *.ipynb
 
 ideal_app\.py
+
+\.idea/

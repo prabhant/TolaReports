@@ -6,10 +6,8 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import os
-import flask
-
-server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server)
+app = dash.Dash(__name__)
+server = app.server
 
 df = pd.read_csv('data.csv')
 a = df['periodic_target'].unique()
@@ -145,4 +143,4 @@ def update_new_tab(year, month, activity):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8560)
