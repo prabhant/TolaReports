@@ -168,8 +168,9 @@ def update_new_tab(year, month, activity):
 @app.callback(Output('new-table2', 'figure'),[Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
 def update_second_tab(a,b,c):
     df2 = pd.read_csv('tmp2.csv')
+    df2['sum'] = df2.sum(axis=1)
     tab = ff.create_table(df2)
-    print(len(df2))
+    print(df2)
     return tab
 
 if __name__ == '__main__':
