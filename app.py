@@ -6,15 +6,26 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import os
+from plotly import tools
 app = dash.Dash(__name__)
 server = app.server
-
+app.title = 'Partner Progress Report'
 df = pd.read_csv('data.csv')#reading file to get month names
 a = df['periodic_target'].unique()# Month names
 activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# HARDCODING ACTIVITEES FOR NOW
 
 
 app.layout = html.Div([
+    html.H1('Partner Progress Report'),
+
+
+    dcc.Dropdown(
+        value=['2017'],
+        options=[{'label': i, 'value': i} for i in ['2017', '2018']],
+        multi=False,
+        id='dropdown-year'
+    ),
+
     dcc.Dropdown(
         value=[],
         options=[{'label': i, 'value': i} for i in list(a)],
@@ -22,20 +33,21 @@ app.layout = html.Div([
         id='dropdown-month'
     ),
     dcc.Dropdown(
-        value=['2017'],
-        options=[{'label': i, 'value': i} for i in ['2017','2018']],
-        multi=False,
-        id='dropdown-year'
-    ),
-    dcc.Dropdown(
         value=['id mob'],
         options=[{'label': i, 'value': i} for i in list(activity_arr)],
         multi=False,
         id='dropdown-activity'
     ),
+    html.H2('Indicator actual result against target'),
     dcc.Graph(id = 'my-graph'),# bar graph
-    dcc.Graph(id = 'my-table'),# table 1
+    html.H2('Indicator actual results by location, sex, age'),
+    dcc.Graph(id = 'my-table'),
+    html.H2('Overall benificiary reached by location, sex and age'),
+    html.H3('Table 1'),
+    dcc.Graph(id='new-table2'),# table 1
+    html.H3('Table 2'),
     dcc.Graph(id = 'new-table')# Table 2
+
 
     ])
 
@@ -116,7 +128,7 @@ def update_new_tab(year, month, activity):
     df_final = pd.DataFrame()
     for i in range(len(activity_arr)):
         dfc = df_arr[i]
-        dfc = dfc.groupby(['Gender', 'Age cohorts','District']).size()
+        dfc = dfc.groupby(['District','Gender', 'Age cohorts']).size()
         dfc = pd.DataFrame(dfc)
         dfc.insert(loc=0, column='Activity', value=activity_arr[i])
         df_final = df_final.append(dfc)
@@ -124,10 +136,41 @@ def update_new_tab(year, month, activity):
     df_display = pd.read_csv('tmp.csv')
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
     df_display = df_display[df_display['Activity'] == activity]
-    df_display = df_display[['Gender', 'Age cohorts', 'District', '0']]
+    df_display = df_display[['District','Gender', 'Age cohorts','0']]
+    df_display['Sum'] = df_display['0']
+    df_display = df_display[['District', 'Gender', 'Age cohorts', 'Sum']]
+    district_arr = df_display['District'].unique()
+    gender_arr = df_display['Gender'].unique()
+    age_arr = df_display['Age cohorts'].unique()
+    sum_arr = []
+    arr = []
+    for i in range(len(district_arr)):
+        tmp = df_display[df_display['District'] == district_arr[i]]
+        sum_ = tmp['Sum'].sum()
+        sum_arr.append(sum_)
+        arr.append(district_arr[i])
+    for i in range(len(gender_arr)):
+        tmp = df_display[df_display['Gender'] == gender_arr[i]]
+        sum_ = tmp['Sum'].sum()
+        sum_arr.append(sum_)
+        arr.append(gender_arr[i])
+    for i in range(len(age_arr)):
+        tmp = df_display[df_display['Age cohorts'] == age_arr[i]]
+        sum_ = tmp['Sum'].sum()
+        sum_arr.append(sum_)
+        arr.append(age_arr[i])
+    df_tmp = pd.DataFrame(sum_arr, index=arr)
+    df_tmp = df_tmp.transpose()
+    df_tmp.to_csv('tmp2.csv', index=False)
     tab = ff.create_table(df_display)
-    return  tab
+    return tab
 
+@app.callback(Output('new-table2', 'figure'),[Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
+def update_second_tab(a,b,c):
+    df2 = pd.read_csv('tmp2.csv')
+    tab = ff.create_table(df2)
+    print(len(df2))
+    return tab
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8560)
