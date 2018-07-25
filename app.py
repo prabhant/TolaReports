@@ -83,18 +83,35 @@ def update_graph(value):
 
 @app.callback(Output('my-table', 'figure'), [Input('dropdown-month', 'value')])
 def update_table(value):
-    df = pd.read_csv('data.csv')
-    y1 = []
-    y2 = []
-    indname = []
-    for i in range(len(df)):
-        if (df['periodic_target'].iloc[i] == value):
-            indname.append(df['name'].iloc[i])
-            y1.append(df['achieved'].iloc[i])
-            y2.append(df['lop_target'].iloc[i])
-
-    dff = pd.DataFrame({'Indicator name': indname, 'achieved': y1, 'target': y2})
-    df_fig = ff.create_table(dff)
+    df2 = pd.read_csv('data2.csv')
+    #y1 = []
+    #y2 = []
+    #indname = []
+    # for i in range(len(df)):
+    #     if (df['periodic_target'].iloc[i] == value):
+    #         indname.append(df['name'].iloc[i])
+    #         y1.append(df['achieved'].iloc[i])
+    #         y2.append(df['lop_target'].iloc[i])
+    df_tmp = df2[df2['periodic_target'] == value]
+    df_tmp = df_tmp[['name', 'disaggregation_type', 'disaggregation_label', 'disaggregation_value', 'achieved', 'lop_target']]
+    df_tmp = df_tmp.dropna()
+    arr_indi = df_tmp['name'].unique()
+    columns = ['Male', 'Female', 'Agago', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+']
+    target_arr = []
+    df_t = pd.DataFrame(columns=['Male', 'Female', 'Agago', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+'])
+    for i in range(len(arr_indi)):
+        df_i = df_tmp[df_tmp['name'] == arr_indi[i]]
+        target = int(df_i['lop_target'].unique())
+        tmp = df_i['disaggregation_value']
+        tmp = pd.Series(tmp)
+        df_t.loc[i] = tmp.values
+        target_arr.append(target)
+    df_t['Indicator'] = arr_indi
+    cols = ['Indicator', 'Male', 'Female', 'Agago', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+']
+    df_t = df_t[cols]
+    df_t.loc[:, 'Sum'] = df_t.sum(axis=1)
+    df_t['Target'] = target_arr
+    df_fig = ff.create_table(df_t)
     return df_fig
 
 
