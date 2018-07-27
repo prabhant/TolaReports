@@ -111,8 +111,24 @@ def update_table(value):
     df_t = df_t[cols]
     df_t.loc[:, 'Sum'] = df_t.sum(axis=1)
     df_t['Target'] = target_arr
-    df_fig = ff.create_table(df_t)
-    return df_fig
+    table = ff.create_table(df_t, height_constant=60)
+    vals = []
+    for i in range(len(list(df_t))):
+        vals.append(df_t.iloc[:, i])
+    return {
+        'data': [
+            go.Table(
+                columnwidth=[150, 40, 40, 40, 40, 40, 40, 40, 40, 40],
+                header=dict(values=list(df_t.columns),
+                            fill=dict(color='C2D4FF')),
+                cells=dict(
+                    values=vals,
+                    fill=dict(color='#F5F8FF'),
+                    align=['left'] * 5)
+            )
+        ]
+    }
+
 
 
 
@@ -180,7 +196,22 @@ def update_new_tab(year, month, activity):
     df_tmp = df_tmp.transpose()
     df_tmp.to_csv('tmp2.csv', index=False)
     tab = ff.create_table(df_display)
-    return tab
+    vals = []
+    for i in range(len(list(df_display))):
+        vals.append(df_display.iloc[:, i])
+    return {
+        'data': [
+            go.Table(
+                header=dict(values=list(df_display.columns),
+                            fill=dict(color='C2D4FF')),
+                cells=dict(
+                    values=vals,
+                    fill=dict(color='#F5F8FF'),
+                    align=['left'] * 5)
+            )
+        ]
+    }
+
 
 @app.callback(Output('new-table2', 'figure'),[Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
 def update_second_tab(a,b,c):
@@ -188,7 +219,20 @@ def update_second_tab(a,b,c):
     df2['sum'] = df2.sum(axis=1)
     tab = ff.create_table(df2)
     print(df2)
-    return tab
-
+    vals = []
+    for i in range(len(list(df2))):
+        vals.append(df2.iloc[:, i])
+    return {
+        'data': [
+            go.Table(
+                header=dict(values=list(df2.columns),
+                            fill=dict(color='C2D4FF')),
+                cells=dict(
+                    values=vals,
+                    fill=dict(color='#F5F8FF'),
+                    align=['left'] * 5)
+            )
+        ]
+    }
 if __name__ == '__main__':
     app.run_server(debug=True, port=8560)
