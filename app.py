@@ -38,7 +38,9 @@ app.layout = html.Div([
     html.H2('Indicator actual result against target',style={'color': '#151F56'}),
     dcc.Graph(id = 'my-graph'),# bar graph
     html.H2('Indicator actual results by location, sex, age',style={'color': '#151F56'}),
+    html.H3('Aggregated by indicators', style={'color': '#151F56'}),
     dcc.Graph(id = 'table-1-1'),
+    html.H3('Disaggregated by indicators', style={'color': '#151F56'}),
     dcc.Graph(id = 'table-1-2'),
     dcc.Dropdown(
         value='id mob',
@@ -46,11 +48,12 @@ app.layout = html.Div([
         multi=False,
         id='dropdown-activity'
     ),
-    html.H2('Overall benificiary reached by location, sex and age',style={'color': '#151F56'}),
-    html.H3('Table 1'),
-    dcc.Graph(id='table-2-1'),# table 1
-    html.H3('Table 2'),
-    dcc.Graph(id = 'table-2-2')# Table 2
+    html.H2('Overall beneficiary reached by location, sex and age',style={'color': '#151F56'}),
+    html.H3('Aggregated reach data'),
+    dcc.Graph(id='table-2-2'),  # Table 2
+    html.H3('Disaggregated reach data'),
+    dcc.Graph(id='table-2-1')# table 1
+
 
 
     ])
