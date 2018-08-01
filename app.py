@@ -15,7 +15,7 @@ a = df['periodic_target'].unique()# Month names
 activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# HARDCODING ACTIVITEES FOR NOW
 
 app.css.append_css({
-    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
+    "external_url": "https://raw.githubusercontent.com/toladata-ce/TolaReports/master/bWLwgP.css"
 })
 app.layout = html.Div([
     html.H1('Partner Progress Report',style={'color': '#151F56'}),
