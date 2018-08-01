@@ -14,56 +14,144 @@ df = pd.read_csv('data.csv')#reading file to get month names
 a = df['periodic_target'].unique()# Month names
 activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# HARDCODING ACTIVITEES FOR NOW
 
-
+app.css.append_css({
+    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
+})
 app.layout = html.Div([
-    html.H1('Partner Progress Report'),
+    html.H1('Partner Progress Report',style={'color': '#151F56'}),
 
 
     dcc.Dropdown(
-        value=['2017'],
+        value='2017',
         options=[{'label': i, 'value': i} for i in ['2017', '2018']],
         multi=False,
         id='dropdown-year'
     ),
 
     dcc.Dropdown(
-        value=[],
+        value='July',
         options=[{'label': i, 'value': i} for i in list(a)],
         multi=False,
         id='dropdown-month'
     ),
 
-    html.H2('Indicator actual result against target'),
+    html.H2('Indicator actual result against target',style={'color': '#151F56'}),
     dcc.Graph(id = 'my-graph'),# bar graph
-    html.H2('Indicator actual results by location, sex, age'),
-    dcc.Graph(id = 'my-table'),
-    dcc.Graph(id = 'my-table-2'),
+    html.H2('Indicator actual results by location, sex, age',style={'color': '#151F56'}),
+    dcc.Graph(id = 'table-1-1'),
+    dcc.Graph(id = 'table-1-2'),
     dcc.Dropdown(
-        value=['id mob'],
+        value='id mob',
         options=[{'label': i, 'value': i} for i in list(activity_arr)],
         multi=False,
         id='dropdown-activity'
     ),
-    html.H2('Overall benificiary reached by location, sex and age'),
+    html.H2('Overall benificiary reached by location, sex and age',style={'color': '#151F56'}),
     html.H3('Table 1'),
-    dcc.Graph(id='new-table2'),# table 1
+    dcc.Graph(id='table-2-1'),# table 1
     html.H3('Table 2'),
-    dcc.Graph(id = 'new-table')# Table 2
+    dcc.Graph(id = 'table-2-2')# Table 2
 
 
     ])
 
-@app.callback(Output('my-graph', 'figure'), [Input('dropdown-month', 'value')])
-def update_graph(value):
-    df = pd.read_csv('data.csv')
-    y1 = []
-    y2 = []
-    indname = []
-    for i in range(len(df)):
-        if (df['periodic_target'].iloc[i] == value):
-            indname.append(df['name'].iloc[i])
-            y1.append(df['achieved'].iloc[i])
-            y2.append(df['lop_target'].iloc[i])
+
+
+@app.callback(Output('my-graph', 'figure'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
+def update_graph(month, year):
+    df = pd.read_csv('new_report.csv')
+    df = df.drop(df.columns[31], axis=1)
+    df = df.drop(df.columns[31], axis=1)
+    df = df.drop(df.columns[31], axis=1)
+    month_arr = ['Month_ID_Mob', 'Month_N_Mgt', 'Month_Demo', 'Month_PHH',
+                 'Month_Mrk_Sales', 'Month_C_Mgt', 'Month_Seed_Dist']
+    year_arr = ['Year_ID_Mob', 'Year_N_Mgt', 'Year_Demo', 'Year_PHH',
+                'Year_Mrk_Sales', 'Year_C_Mgt', 'Year_Seed_Dist']
+    activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']
+    count_arr = []
+    df_arr = []
+    index = 10
+    year = int(year)
+    val = month
+    valy = year
+    for i in range(len(month_arr)):
+        index = index + 3  # because all activites are at a difference of 3 cols
+        df_tmp = df[df[month_arr[i]] == val]  # filtering by month
+        df_tmp = df_tmp[df_tmp[year_arr[i]] == valy]  # filtering by year
+        # count_tmp = df_tmp.iloc[:, index].value_counts()#counting
+        # count_arr.append(count_tmp)
+        df_arr.append(df_tmp)
+    df_final = pd.DataFrame()
+    for i in range(len(activity_arr)):
+        dfc = df_arr[i]
+        dfc = dfc.groupby(['District', 'Gender', 'Age cohorts']).size()
+        dfc = pd.DataFrame(dfc)
+        dfc.insert(loc=0, column='Activity', value=activity_arr[i])
+        df_final = df_final.append(dfc)
+    df_final.to_csv('tmp.csv')  # saving the file as temporary one as the ff does not display the row names
+    df_display = pd.read_csv('tmp.csv')
+    df_display = df_display[['Activity', 'Gender', 'Age cohorts', 'District', '0']]
+    # df_display = df_display[df_display['Activity'] == activity]
+    df_display['Sum'] = df_display['0']
+    indilist = pd.read_csv('indicators.csv')
+    indicator_map = ['nursery management', 'phh', 'marketing', 'crop management', 'seed distribution']
+    df_tmp = df_display
+    arr = []
+    arr_i = []
+    for i in range(len(df_display)):
+        flag = 0
+        tmp = df_display.iloc[i, 0]
+        for j in range(len(indicator_map)):
+            if (tmp == indicator_map[j]):
+                arr.append(indilist.iloc[j, 0])
+                flag = 1
+        if (flag == 0):
+            arr_i.append(i)
+    df_tmp = df_tmp.drop(df_tmp.index[arr_i])
+    df_tmp['Indicators'] = arr
+    df_tmp = df_tmp[['Indicators', 'District', 'Gender', 'Age cohorts', 'Sum']]
+    df_display = df_tmp
+    indi_arr = df_display['Indicators'].unique()
+    df_main = pd.DataFrame()
+    for i in range(len(indi_arr)):
+        df_tmp_2 = df_display[df_display['Indicators'] == indi_arr[i]]
+        district_arr = df_tmp_2['District'].unique()
+        gender_arr = df_tmp_2['Gender'].unique()
+        age_arr = df_tmp_2['Age cohorts'].unique()
+        sum_arr = []
+        arr = []
+        for i in range(len(district_arr)):
+            tmp = df_tmp_2[df_tmp_2['District'] == district_arr[i]]
+            sum_ = tmp['Sum'].sum()
+            sum_arr.append(sum_)
+            arr.append(district_arr[i])
+        for i in range(len(gender_arr)):
+            tmp = df_tmp_2[df_tmp_2['Gender'] == gender_arr[i]]
+            sum_ = tmp['Sum'].sum()
+            sum_arr.append(sum_)
+            arr.append(gender_arr[i])
+        for i in range(len(age_arr)):
+            tmp = df_tmp_2[df_tmp_2['Age cohorts'] == age_arr[i]]
+            sum_ = tmp['Sum'].sum()
+            sum_arr.append(sum_)
+            arr.append(age_arr[i])
+        df_tmp = pd.DataFrame(sum_arr, index=arr)
+        df_tmp = df_tmp.transpose()
+        df_main = df_main.append(df_tmp)
+    df_main['Indicator'] = indi_arr
+    df_t = df_main
+    cols = ['Indicator', 'Male', 'Female', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+']
+    df_t = df_t[cols]
+    df_t.loc[:, 'Sum'] = df_t['Male']+df_t['Female']
+    target_arr = []
+    for i in range(len(df_t)):
+        for j in range(len(indilist)):
+            if (df_t.iloc[i, 0] == list(indilist['Indicators'])[j]):
+                target_arr.append(list(indilist['LOP Target'])[j])
+    df_t['Target'] = target_arr
+    y1 = list(df_t['Sum'])
+    y2 = list(df_t['Target'])
+    indname = list(df_t['Indicator'])
     return {
         'data': [go.Bar(
             x = indname,
@@ -83,7 +171,7 @@ def update_graph(value):
         ]
     }
 
-@app.callback(Output('my-table', 'figure'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
+@app.callback(Output('table-1-1', 'figure'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def update_table(month, year):
     df = pd.read_csv('new_report.csv')
     df = df.drop(df.columns[31], axis=1)
@@ -168,7 +256,7 @@ def update_table(month, year):
     df_t = df_main
     cols = ['Indicator', 'Male', 'Female', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+']
     df_t = df_t[cols]
-    df_t.loc[:, 'Sum'] = df_t.sum(axis=1)
+    df_t.loc[:, 'Sum'] = df_t['Male']+df_t['Female']
     target_arr = []
     for i in range(len(df_t)):
         for j in range(len(indilist)):
@@ -194,7 +282,7 @@ def update_table(month, year):
     }
 
 
-@app.callback(Output('my-table-2', 'figure'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
+@app.callback(Output('table-1-2', 'figure'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def update_table(month, year):
     df = pd.read_csv('new_report.csv')
     df = df.drop(df.columns[31], axis=1)
@@ -270,7 +358,7 @@ def update_table(month, year):
     }
 
 # Table 3 uses 2 dropdowns so calling 2 inputs
-@app.callback(Output('new-table', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
+@app.callback(Output('table-2-1', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
 def update_new_tab(year, month, activity):
     year = int(year)
     df = pd.read_csv('new_report.csv')
@@ -350,7 +438,7 @@ def update_new_tab(year, month, activity):
     }
 
 
-@app.callback(Output('new-table2', 'figure'),[Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
+@app.callback(Output('table-2-2', 'figure'),[Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
 def update_second_tab(year, month, activity):
     year = int(year)
     df = pd.read_csv('new_report.csv')
@@ -412,7 +500,7 @@ def update_second_tab(year, month, activity):
     df_tmp = pd.DataFrame(sum_arr, index=arr)
     df_tmp = df_tmp.transpose()
     df2 = df_tmp
-    df2['sum'] = df2.sum(axis=1)
+    df2['Sum'] = df2['Male']+df2['Female']
     tab = ff.create_table(df2)
     print(df2)
     vals = []
