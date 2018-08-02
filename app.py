@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import os
+import flask
 from plotly import tools
 app = dash.Dash(__name__)
 server = app.server
@@ -14,41 +15,45 @@ df = pd.read_csv('data.csv')#reading file to get month names
 a = df['periodic_target'].unique()# Month names
 activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# HARDCODING ACTIVITEES FOR NOW
 
-app.css.append_css({
-    "external_url": "https://raw.githubusercontent.com/toladata-ce/TolaReports/master/bWLwgP.css"
-})
-app.layout = html.Div([
-    html.H1('Partner Progress Report',style={'color': '#151F56'}),
 
+app.layout = html.Div([
+
+    html.H1('Partner Progress Report'),
+    html.Div('Please select Year'),
 
     dcc.Dropdown(
         value='2017',
         options=[{'label': i, 'value': i} for i in ['2017', '2018']],
         multi=False,
-        id='dropdown-year'
+        id='dropdown-year',
+        placeholder="Select Year",
     ),
-
+    html.Div('Please select Month'),
     dcc.Dropdown(
         value='July',
         options=[{'label': i, 'value': i} for i in list(a)],
+        placeholder="Select Month",
         multi=False,
-        id='dropdown-month'
+        id='dropdown-month',
+
     ),
 
-    html.H2('Indicator actual result against target',style={'color': '#151F56'}),
+    html.H2('Indicator actual results against target'),
     dcc.Graph(id = 'my-graph'),# bar graph
-    html.H2('Indicator actual results by location, sex, age',style={'color': '#151F56'}),
-    html.H3('Aggregated by indicators', style={'color': '#151F56'}),
+    html.H2('Indicator actual results by location, sex, age'),
+    html.H3('Aggregated by indicators'),
     dcc.Graph(id = 'table-1-1'),
-    html.H3('Disaggregated by indicators', style={'color': '#151F56'}),
+    html.H3('Disaggregated by indicators'),
     dcc.Graph(id = 'table-1-2'),
+    html.Div('Please select Activity'),
     dcc.Dropdown(
         value='id mob',
         options=[{'label': i, 'value': i} for i in list(activity_arr)],
         multi=False,
-        id='dropdown-activity'
+        id='dropdown-activity',
+        placeholder="Select Activity",
     ),
-    html.H2('Overall beneficiary reached by location, sex and age',style={'color': '#151F56'}),
+    html.H2('Overall beneficiary reached by location, sex and age'),
     html.H3('Aggregated reach data'),
     dcc.Graph(id='table-2-2'),  # Table 2
     html.H3('Disaggregated reach data'),
@@ -57,9 +62,26 @@ app.layout = html.Div([
 
 
     ])
-
-
-
+#
+# css_directory = os.getcwd()
+# stylesheets = ['stylecheet.css']
+# static_css_route = '/assets/'
+#
+#
+# @app.server.route('{}<stylesheet>'.format(static_css_route))
+# def serve_stylesheet(stylesheet):
+#     if stylesheet not in stylesheets:
+#         raise Exception(
+#             '"{}" is excluded from the allowed static files'.format(
+#                 stylesheet
+#             )
+#         )
+#     return flask.send_from_directory(css_directory, stylesheet)
+#
+#
+# for stylesheet in stylesheets:
+#     app.css.append_css({"external_url": "/static/{}".format(stylesheet)})
+#
 @app.callback(Output('my-graph', 'figure'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def update_graph(month, year):
     df = pd.read_csv('new_report.csv')
@@ -259,13 +281,13 @@ def update_table(month, year):
     df_t = df_main
     cols = ['Indicator', 'Male', 'Female', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+']
     df_t = df_t[cols]
-    df_t.loc[:, 'Sum'] = df_t['Male']+df_t['Female']
+    df_t.loc[:, 'Total Actualotf'] = df_t['Male']+df_t['Female']
     target_arr = []
     for i in range(len(df_t)):
         for j in range(len(indilist)):
             if (df_t.iloc[i, 0] == list(indilist['Indicators'])[j]):
                 target_arr.append(list(indilist['LOP Target'])[j])
-    df_t['Target'] = target_arr
+    df_t['Total Target'] = target_arr
     table = ff.create_table(df_t, height_constant=60)
     vals = []
     for i in range(len(list(df_t))):
@@ -275,9 +297,11 @@ def update_table(month, year):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40, 40, 40, 40,40],
                 header=dict(values=list(df_t.columns),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
+                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
                     fill=dict(color='#F5F8FF'),
                     align=['left'] * 5)
             )
@@ -339,7 +363,8 @@ def update_table(month, year):
     df_tmp['Indicators'] = arr
     df_tmp = df_tmp[['Indicators', 'District', 'Gender', 'Age cohorts', 'Sum']]
     df_t = df_tmp
-    cols = ['Indicators', 'District', 'Gender', 'Age cohorts', 'Sum']
+    df_t = df_t.rename(index=str, columns={"Age cohorts": "Age Category","Sum":"Total Actual"})
+    cols = ['Indicators', 'District', 'Gender', 'Age Category', 'Total Actual']
     df_t = df_t[cols]
     # df_t['Target'] = target_arr
     table = ff.create_table(df_t, height_constant=60)
@@ -351,10 +376,12 @@ def update_table(month, year):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40],
                 header=dict(values=list(df_t.columns),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
                     fill=dict(color='#F5F8FF'),
+                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
                     align=['left'] * 5)
             )
         ]
@@ -400,29 +427,31 @@ def update_new_tab(year, month, activity):
     df_display = df_display[['District','Gender', 'Age cohorts','0']]
     df_display['Sum'] = df_display['0']
     df_display = df_display[['District', 'Gender', 'Age cohorts', 'Sum']]
-    district_arr = df_display['District'].unique()
-    gender_arr = df_display['Gender'].unique()
-    age_arr = df_display['Age cohorts'].unique()
-    sum_arr = []
-    arr = []
-    for i in range(len(district_arr)):
-        tmp = df_display[df_display['District'] == district_arr[i]]
-        sum_ = tmp['Sum'].sum()
-        sum_arr.append(sum_)
-        arr.append(district_arr[i])
-    for i in range(len(gender_arr)):
-        tmp = df_display[df_display['Gender'] == gender_arr[i]]
-        sum_ = tmp['Sum'].sum()
-        sum_arr.append(sum_)
-        arr.append(gender_arr[i])
-    for i in range(len(age_arr)):
-        tmp = df_display[df_display['Age cohorts'] == age_arr[i]]
-        sum_ = tmp['Sum'].sum()
-        sum_arr.append(sum_)
-        arr.append(age_arr[i])
-    df_tmp = pd.DataFrame(sum_arr, index=arr)
-    df_tmp = df_tmp.transpose()
-    df_tmp.to_csv('tmp2.csv', index=False)
+    df_display = df_display.rename(index=str, columns={"Age cohorts": "Age Category","Sum":"Total Actual"})
+
+    # district_arr = df_display['District'].unique()
+    # gender_arr = df_display['Gender'].unique()
+    # age_arr = df_display['Age cohorts'].unique()
+    # sum_arr = []
+    # arr = []
+    # for i in range(len(district_arr)):
+    #     tmp = df_display[df_display['District'] == district_arr[i]]
+    #     sum_ = tmp['Sum'].sum()
+    #     sum_arr.append(sum_)
+    #     arr.append(district_arr[i])
+    # for i in range(len(gender_arr)):
+    #     tmp = df_display[df_display['Gender'] == gender_arr[i]]
+    #     sum_ = tmp['Sum'].sum()
+    #     sum_arr.append(sum_)
+    #     arr.append(gender_arr[i])
+    # for i in range(len(age_arr)):
+    #     tmp = df_display[df_display['Age cohorts'] == age_arr[i]]
+    #     sum_ = tmp['Sum'].sum()
+    #     sum_arr.append(sum_)
+    #     arr.append(age_arr[i])
+    # df_tmp = pd.DataFrame(sum_arr, index=arr)
+    # df_tmp = df_tmp.transpose()
+    # df_tmp.to_csv('tmp2.csv', index=False)
     tab = ff.create_table(df_display)
     vals = []
     for i in range(len(list(df_display))):
@@ -431,10 +460,12 @@ def update_new_tab(year, month, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df_display.columns),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
                     fill=dict(color='#F5F8FF'),
+                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
                     align=['left'] * 5)
             )
         ]
@@ -503,7 +534,7 @@ def update_second_tab(year, month, activity):
     df_tmp = pd.DataFrame(sum_arr, index=arr)
     df_tmp = df_tmp.transpose()
     df2 = df_tmp
-    df2['Sum'] = df2['Male']+df2['Female']
+    df2['Total Actual'] = df2['Male']+df2['Female']
     tab = ff.create_table(df2)
     print(df2)
     vals = []
@@ -513,10 +544,12 @@ def update_second_tab(year, month, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df2.columns),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
                     fill=dict(color='#F5F8FF'),
+                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
                     align=['left'] * 5)
             )
         ]
