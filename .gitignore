@@ -5,3 +5,7 @@
 ideal_app\.py
 
 \.idea/
+
+*.ttf
+
+*.otf
