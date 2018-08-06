@@ -16,7 +16,13 @@ a = ['January','February','March','April','May','June','July','August','Septembe
 activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# HARDCODING ACTIVITEES FOR NOW
 
 
+
 app.layout = html.Div([
+=======
+df = pd.read_csv('data.csv')# loading csv here for month array
+a = df['periodic_target'].unique()# month array
+activity_arr = ['id mob', 'nursery management', 'demo', 'phh', 'marketing', 'crop management', 'seed distribution']# activity array
+
 
     html.H1('Partner Progress Report'),
     html.Div('Please select Year'),
@@ -53,6 +59,7 @@ app.layout = html.Div([
         id='dropdown-activity',
         placeholder="Select Activity",
     ),
+
     html.H2('Overall beneficiary reached by location, sex and age'),
     html.H3('Aggregated reach data'),
     dcc.Graph(id='table-2-2'),  # Table 2
@@ -67,6 +74,64 @@ app.layout = html.Div([
     ])
 @app.callback(Output('intermediate-value', 'children'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def common_table(month, year):
+    dcc.Graph(id = 'my-graph'),# Bar graph
+    dcc.Graph(id = 'my-table'),# Table 1
+    dcc.Graph(id = 'new-table')# Table 2
+
+    ])
+
+@app.callback(Output('my-graph', 'figure'), [Input('dropdown-month', 'value')])# Callback for bar graph
+def update_graph(value):
+    df = pd.read_csv('data.csv')
+    y1 = []
+    y2 = []
+    indname = []
+    for i in range(len(df)):
+        if (df['periodic_target'].iloc[i] == value):
+            indname.append(df['name'].iloc[i])
+            y1.append(df['achieved'].iloc[i])
+            y2.append(df['lop_target'].iloc[i])
+    return {
+        'data': [go.Bar(
+            x = indname,
+            y = y1,
+            name = 'achieved',
+            marker = go.Marker(
+                color = 'rgb(55,83,109)'
+
+            )
+
+        ),
+        go.Bar(
+            x = indname,
+            y = y2,
+            name = 'target'
+        )
+        ]
+    }
+
+@app.callback(Output('my-table', 'figure'), [Input('dropdown-month', 'value')])# Callback for table 1 using only month
+def update_table(value):
+    df = pd.read_csv('data.csv')# Reading the csv again because using global objects can break dash app
+    y1 = []
+    y2 = []
+    indname = []
+    for i in range(len(df)):
+        if (df['periodic_target'].iloc[i] == value):
+            indname.append(df['name'].iloc[i])
+            y1.append(df['achieved'].iloc[i])
+            y2.append(df['lop_target'].iloc[i])
+
+    dff = pd.DataFrame({'Indicator name': indname, 'achieved': y1, 'target': y2})
+    df_fig = ff.create_table(dff)# Figure factory to create plotly graph
+    return df_fig
+
+
+
+# 3rd callback using 2nd and 3rd dropdown to create table - 3
+@app.callback(Output('new-table', 'figure'), [Input('dropdown-year', 'value'),Input('dropdown-month', 'value'), Input('dropdown-activity', 'value')])
+def update_new_tab(year, month, activity):
+    year = int(year)
     df = pd.read_csv('new_report.csv')
     df = df.drop(df.columns[31], axis=1)
     df = df.drop(df.columns[31], axis=1)
@@ -96,6 +161,7 @@ def common_table(month, year):
         dfc = pd.DataFrame(dfc)
         dfc.insert(loc=0, column='Activity', value=activity_arr[i])
         df_final = df_final.append(dfc)
+
     df_final.to_csv('tmp.csv')  # saving the file as temporary one as the ff does not display the row names
     df_display = pd.read_csv('tmp.csv')
     return df_display.to_json(date_format='iso', orient='split')
@@ -289,6 +355,14 @@ def update_new_tab(cleaned_data, activity):
             )
         ]
     }
+=======
+    df_final.to_csv('tmp.csv')# saving file again because fig factory doesnot print row index by groupby
+    df_display = pd.read_csv('tmp.csv')#loading it again
+    df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]# displaying only these 4 elements right now
+    df_display = df_display[df_display['Activity'] == activity]
+    df_display = df_display[['Gender', 'Age cohorts', 'District', '0']]
+    tab = ff.create_table(df_display)
+    return tab
 
 
 @app.callback(Output('table-2-2', 'figure'),[Input('intermediate-value', 'children'), Input('dropdown-activity', 'value')])
@@ -351,4 +425,4 @@ def update_second_tab(cleaned_data, activity):
         ]
     }
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8560)
+    app.run_server(debug=True)
