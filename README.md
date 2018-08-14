@@ -15,16 +15,16 @@ The goal of TolaReports is to reduce developers efforts in deploying a visual we
 
 ## Setup
 We recommend using virtual environment for deployment
-'''$ git init        # initializes an empty git repo
+```$ git init        # initializes an empty git repo
 $ virtualenv venv # creates a virtualenv called "venv"
 $ source venv/bin/activate # uses the virtualenv
-'''
+```
 
 To deploy the app on heroku follow these instructions
-'''
+```
 $ heroku create my-dash-app # change my-dash-app to a unique name
 $ git add . # add all files to git
 $ git commit -m 'Initial app boilerplate'
 $ git push heroku master # deploy code to heroku
 $ heroku ps:scale web=1  # run the app with a 1 heroku "dyno"
-'''
+```
