@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output
 from app import app
 from apps import app1, app2, landingapp
 
+server = app.server
 
 def get_logo():
     logo = html.Div([
@@ -19,6 +20,11 @@ def get_logo():
 
     ], className="row gs-header")
     return logo
+
+def print_button():
+    printButton = html.A(['Print PDF'],className="button no-print print",style={'position': "absolute", 'top': '-40', 'right': '0'})
+    return printButton
+
 
 def get_header():
     header = html.Div([

@@ -22,13 +22,16 @@ def get_logo():
     ], className="row gs-header")
     return logo
 
+def print_button():
+    printButton = html.A(['Print PDF'],className="button no-print print",style={'position': "absolute", 'top': '-40', 'right': '0'})
+    return printButton
 
 def get_header():
     header = html.Div([
 
         html.Div([
             html.H5(
-                'TolaData Awesome Reports')
+                'TolaReports: MEL')
         ], className="twelve columns padded")
 
     ], className="row gs-header gs-text-header")
@@ -61,7 +64,7 @@ gender_eq = gender_eq.transpose()
 gender_nec = gender_nec.transpose()
 
 
-layout = html.Div([  # page 1
+layout = html.Div([  print_button(),# page 1
 
 
         html.Div([
@@ -72,27 +75,62 @@ layout = html.Div([  # page 1
             html.Br([]),
             get_menu(),
             ]),
+
+
     html.H2('District'),
     html.H3('Partner Equator'),
-    dcc.Graph(id = 'summary-table-1',
+html.Div([
+    html.Div([dcc.Graph(id = 'summary-table-1',
               figure ={
                   'data':[
                       go.Table(
-                          header=dict(values = list(dis_eq)),
-                          cells=dict(values=[dis_eq.Pader, dis_eq.Omoro, dis_eq.Gulu]))
+                          header=dict(values = list(dis_eq),
+                          font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                          fill=dict(color='C2D4FF')
+                      ),
+                          cells=dict(values=[dis_eq.Pader, dis_eq.Omoro, dis_eq.Gulu],
+                                     fill=dict(color='#F5F8FF'),
+                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                     align=['left'] * 5
+                                     ))
                   ]
               }
-    ),
+    )], className="six columns"),
+    html.Div([dcc.Graph(id = 'piechart-1',
+                  figure ={
+                      'data':[
+                          go.Pie(labels=list(dis_eq), values=[int(dis_eq.Pader), int(dis_eq.Omoro), int(dis_eq.Gulu)])
+                      ]
+                  }
+        )], className="six columns"),
+
+    ], className="row"),
     html.H3('Partner NECPA'),
-    dcc.Graph(id='summary-table-2',
+html.Div([
+    html.Div([dcc.Graph(id='summary-table-2',
               figure={
                   'data': [
                       go.Table(
-                          header=dict(values=list(dis_nec)),
-                          cells=dict(values=[dis_nec.Omoro, dis_nec.Gulu, dis_nec.Pader]))
+                          header=dict(values=list(dis_nec),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                            fill=dict(color='C2D4FF')),
+                          cells=dict(values=[dis_nec.Omoro, dis_nec.Gulu, dis_nec.Pader],
+                                     fill=dict(color='#F5F8FF'),
+                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                     align=['left'] * 5
+                                     ))
                   ]
               }
-              ),
+              )], className="six columns"),
+    html.Div([dcc.Graph(id = 'piechart-2',
+                  figure ={
+                      'data':[
+                          go.Pie(labels=list(dis_eq), values=[int(dis_nec.Omoro), int(dis_nec.Gulu), int(dis_nec.Pader)])
+                      ]
+                  }
+        )], className="six columns"),
+
+    ], className="row"),
 html.H2('Gender'),
 html.H3('Partner Equator'),
 html.Div([
@@ -100,8 +138,14 @@ html.Div([
               figure ={
                   'data':[
                       go.Table(
-                          header=dict(values = list(gender_eq)),
-                          cells=dict(values=[gender_eq.Male, gender_eq.Female]))
+                          header=dict(values = list(gender_eq),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                            fill=dict(color='C2D4FF')),
+                          cells=dict(values=[gender_eq.Male, gender_eq.Female],
+                                     fill=dict(color='#F5F8FF'),
+                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                     align=['left'] * 5
+                                     ))
                   ]
               }
     )], className="six columns"),
@@ -115,15 +159,31 @@ html.Div([
 
     ], className="row"),
     html.H3('Partner NECPA'),
-    dcc.Graph(id='summary-table-4',
+html.Div([
+    html.Div([dcc.Graph(id='summary-table-4',
               figure={
                   'data': [
                       go.Table(
-                          header=dict(values=list(gender_nec)),
-                          cells=dict(values=[gender_nec.Male, gender_nec.Female]))
+                          header=dict(values=list(gender_nec),
+                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                            fill=dict(color='C2D4FF')),
+                          cells=dict(values=[gender_nec.Male, gender_nec.Female],
+                                     fill=dict(color='#F5F8FF'),
+                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                     align=['left'] * 5
+                                     ))
                   ]
               }
-              ),
+              )], className="six columns"),
+    html.Div([dcc.Graph(id = 'piechart-4',
+                  figure ={
+                      'data':[
+                          go.Pie(labels=list(gender_nec), values=[int(gender_nec.Male), int(gender_nec.Female)])
+                      ]
+                  }
+        )], className="six columns"),
+
+    ], className="row"),
 
 
 ])

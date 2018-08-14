@@ -15,6 +15,11 @@ a = ['January','February','March','April','May','June','July','August','Septembe
 activity_arr = ['Contracted seed growth', 'Pre season', 'Mid Season', 'PHH',
                 'Demo Establishment','Certification','Seed Distribution']
 
+
+def print_button():
+    printButton = html.A(['Print PDF'],className="button no-print print",style={'position': "absolute", 'top': '-40', 'right': '0'})
+    return printButton
+
 def get_menu():
     menu = html.Div([
 
@@ -51,6 +56,7 @@ def get_header():
     return header
 
 layout = html.Div([
+    print_button(),
     html.Div([
 
         # Header
@@ -399,4 +405,4 @@ def update_second_tab(cleaned_data, activity):
         ]
     }
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8560)
+    app.run_server(debug=True)

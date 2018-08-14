@@ -28,6 +28,10 @@ def get_logo():
     ], className="row gs-header")
     return logo
 
+def print_button():
+    printButton = html.A(['Print PDF'],className="button no-print print",style={'position': "absolute", 'top': '-40', 'right': '0'})
+    return printButton
+
 def get_header():
     header = html.Div([
 
@@ -51,7 +55,7 @@ def get_menu():
     return menu
 
 
-layout = html.Div([
+layout = html.Div([ print_button(),
     html.Div([
 
         # Header
@@ -392,4 +396,4 @@ def update_second_tab(cleaned_data, activity):
         ]
     }
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8560)
+    app.run_server(debug=True)
