@@ -56,61 +56,61 @@ def get_menu():
 
 
 layout = html.Div([ print_button(),
-    html.Div([
+                    html.Div([
 
-        # Header
-        get_logo(),
-        get_header(),
-        html.Br([]),
-        get_menu(),
-    ]),
-    html.H1('Partner Progress Report'),
-    html.Div('Please select Year'),
+                        # Header
+                        get_logo(),
+                        get_header(),
+                        html.Br([]),
+                        get_menu(),
+                    ]),
+                    html.H1('Partner Progress Report'),
+                    html.Div('Please select Year'),
 
-    dcc.Dropdown(
-        value='2017',
-        options=[{'label': i, 'value': i} for i in ['2017', '2018']],
-        multi=False,
-        id='dropdown-year',
-        placeholder="Select Year",
-    ),
-    html.Div('Please select Month'),
-    dcc.Dropdown(
-        value='July',
-        options=[{'label': i, 'value': i} for i in list(a)],
-        placeholder="Select Month",
-        multi=False,
-        id='dropdown-month',
+                    dcc.Dropdown(
+                        value='2017',
+                        options=[{'label': i, 'value': i} for i in ['2017', '2018']],
+                        multi=False,
+                        id='dropdown-year',
+                        placeholder="Select Year",
+                    ),
+                    html.Div('Please select Month'),
+                    dcc.Dropdown(
+                        value='July',
+                        options=[{'label': i, 'value': i} for i in list(a)],
+                        placeholder="Select Month",
+                        multi=False,
+                        id='dropdown-month',
 
-    ),
+                    ),
 
-    html.H2('Indicator actual results against target'),
-    dcc.Graph(id = 'my-graph'),# bar graph
-    html.H2('Indicator actual results by location, sex, age'),
-    html.H3('Aggregated by indicators'),
-    dcc.Graph(id = 'table-1-1'),
-    html.H3('Disaggregated by indicators'),
-    dcc.Graph(id = 'table-1-2'),
-    html.Div('Please select Activity'),
-    dcc.Dropdown(
-        value='id mob',
-        options=[{'label': i, 'value': i} for i in list(activity_arr)],
-        multi=False,
-        id='dropdown-activity',
-        placeholder="Select Activity",
-    ),
-    html.H2('Overall beneficiary reached by location, sex and age'),
-    html.H3('Aggregated reach data'),
-    dcc.Graph(id='table-2-2'),  # Table 2
-    html.H3('Disaggregated reach data'),
-    dcc.Graph(id='table-2-1'),# table 1
-    html.Div(id='intermediate-value', style={'display': 'none'}),
-    html.Div(id='intermediate-value-1', style={'display': 'none'})
-
-
+                    html.H2('Indicator actual results against target'),
+                    dcc.Graph(id = 'my-graph'),# bar graph
+                    html.H2('Indicator actual results by location, sex, age'),
+                    html.H3('Aggregated by indicators'),
+                    dcc.Graph(id = 'table-1-1'),
+                    html.H3('Disaggregated by indicators'),
+                    dcc.Graph(id = 'table-1-2'),
+                    html.Div('Please select Activity'),
+                    dcc.Dropdown(
+                        value='id mob',
+                        options=[{'label': i, 'value': i} for i in list(activity_arr)],
+                        multi=False,
+                        id='dropdown-activity',
+                        placeholder="Select Activity",
+                    ),
+                    html.H2('Overall beneficiary reached by location, sex and age'),
+                    html.H3('Aggregated reach data'),
+                    dcc.Graph(id='table-2-2'),  # Table 2
+                    html.H3('Disaggregated reach data'),
+                    dcc.Graph(id='table-2-1'),# table 1
+                    html.Div(id='intermediate-value', style={'display': 'none'}),
+                    html.Div(id='intermediate-value-1', style={'display': 'none'})
 
 
-    ])
+
+
+                    ])
 @app.callback(Output('intermediate-value', 'children'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def common_table(month, year):
     df = pd.read_csv('data/necpa.csv')
@@ -230,11 +230,11 @@ def update_graph(cleaned_data):
             )
 
         ),
-        go.Bar(
-            x = indname,
-            y = y2,
-            name = 'target'
-        )
+            go.Bar(
+                x = indname,
+                y = y2,
+                name = 'target'
+            )
         ]
     }
 
@@ -339,7 +339,7 @@ def update_new_tab(cleaned_data, activity):
 
 @app.callback(Output('table-2-2', 'figure'),[Input('intermediate-value', 'children'), Input('dropdown-activity', 'value')])
 def update_second_tab(cleaned_data, activity):
-# saving the file as temporary one as the ff does not display the row names
+    # saving the file as temporary one as the ff does not display the row names
     df_display = pd.read_json(cleaned_data, orient='split')
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
     df_display = df_display[df_display['Activity'] == activity]
