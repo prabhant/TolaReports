@@ -158,6 +158,8 @@ def common_table(month, year):
 @app.callback(Output('intermediate-value-eq-1', 'children'), [Input('intermediate-value-eq', 'children')])
 def section_one_table(cleaned_data):
     df_display = pd.read_json(cleaned_data, orient='split')
+    if(len(df_display)==0):
+        return df_display.to_json(date_format='iso', orient='split')
     df_display = df_display[['Activity', 'Gender', 'Age cohorts', 'District', '0']]
     # df_display = df_display[df_display['Activity'] == activity]
     df_display['Sum'] = df_display['0']
@@ -225,6 +227,14 @@ def section_one_table(cleaned_data):
 def update_graph(cleaned_data):
     df_t = pd.read_json(cleaned_data, orient='split')
     print(df_t)
+    if(len(df_t)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     y1 = list(df_t['Total Actual'])
     y2 = list(df_t['Total Target'])
     indname = list(df_t['Indicator'])
@@ -257,6 +267,14 @@ def update_graph(cleaned_data):
 def update_table(cleaned_data):
     df_t = pd.read_json(cleaned_data, orient='split')
     vals = []
+    if(len(df_t)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     for i in range(len(list(df_t))):
         vals.append(df_t.iloc[:, i])
     return {
@@ -279,6 +297,14 @@ def update_table(cleaned_data):
 @app.callback(Output('eq-table-1-2', 'figure'), [Input('intermediate-value-eq', 'children')])
 def update_table(cleaned_data):
     df_display = pd.read_json(cleaned_data, orient='split')
+    if(len(df_display)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     df_display = df_display[['Activity', 'Gender', 'Age cohorts', 'District', '0']]
     # df_display = df_display[df_display['Activity'] == activity]
     df_display['Sum'] = df_display['0']
@@ -327,6 +353,14 @@ def update_table(cleaned_data):
 @app.callback(Output('eq-table-2-1', 'figure'), [Input('intermediate-value-eq', 'children'), Input('dropdown-activity', 'value')])
 def update_new_tab(cleaned_data, activity):
     df_display = pd.read_json(cleaned_data, orient='split')
+    if(len(df_display)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
     df_display = df_display[df_display['Activity'] == activity]
     df_display = df_display[['District','Gender', 'Age cohorts','0']]
@@ -356,6 +390,14 @@ def update_new_tab(cleaned_data, activity):
 def update_second_tab(cleaned_data, activity):
     # saving the file as temporary one as the ff does not display the row names
     df_display = pd.read_json(cleaned_data, orient='split')
+    if(len(df_display)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
     df_display = df_display[df_display['Activity'] == activity]
     df_display = df_display[['District','Gender', 'Age cohorts','0']]
