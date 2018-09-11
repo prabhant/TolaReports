@@ -282,12 +282,12 @@ def update_table(cleaned_data):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40, 40, 40, 40,40],
                 header=dict(values=list(df_t.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                            font=dict(family='Roboto', size=16, color='#ffffff'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                    fill=dict(color='#F5F8FF'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
+                    fill=dict(color='#ffffff'),
                     align=['left'] * 5)
             )
         ]
@@ -338,12 +338,12 @@ def update_table(cleaned_data):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40],
                 header=dict(values=list(df_t.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                            font=dict(family='Roboto', size=16, color='#ffffff'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
@@ -374,12 +374,12 @@ def update_new_tab(cleaned_data, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df_display.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
+                            font=dict(family='Roboto', size=16, color='#ffffff'),
                             fill=dict(color='C2D4FF')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
@@ -443,11 +443,11 @@ def update_second_tab(cleaned_data, activity):
             go.Table(
                 header=dict(values=list(df2.columns),
                             font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
