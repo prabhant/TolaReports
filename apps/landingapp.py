@@ -41,11 +41,10 @@ def get_header():
 def get_menu():
     menu = html.Div([
 
-        dcc.Link('Overview   ', href='/apps/landingapp', className="tab first"),
-
-        dcc.Link('NECPA', href='/apps/app1', className="tab"),
+        html.H5(dcc.Link('Overview   ', href='/apps/landingapp', className="tab first")),
+        dcc.Link('NECPA', href='/apps/app1', className="tab",style={"color": "red", "text-decoration": "none","size": "20"}),
         dcc.Link('EQUATOR', href='/apps/app2', className="tab")
-    ], className="row ")
+                ], className="row ")
     return menu
 
 df_eqt = pd.read_csv('data/equator.csv')
@@ -85,12 +84,12 @@ layout = html.Div([  print_button(),# page 1
                                                  'data':[
                                                      go.Table(
                                                          header=dict(values = list(dis_eq),
-                                                                     font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                                                                     fill=dict(color='C2D4FF')
+                                                                     font=dict(family='Roboto', size=16, color='#143945'),
+                                                                     fill=dict(color='#ffffff')
                                                                      ),
                                                          cells=dict(values=[dis_eq.Pader, dis_eq.Omoro, dis_eq.Gulu],
-                                                                    fill=dict(color='#F5F8FF'),
-                                                                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                                                    fill=dict(color='#ffffff'),
+                                                                    font=dict(family='Roboto', size=14, color='#333333'),
                                                                     align=['left'] * 5
                                                                     ))
                                                  ]
@@ -100,7 +99,7 @@ layout = html.Div([  print_button(),# page 1
                                              figure ={
                                                  'data':[
                                                      go.Pie(labels=list(dis_eq), values=[int(dis_eq.Pader), int(dis_eq.Omoro), int(dis_eq.Gulu)],
-                                                            marker = dict(colors = ))
+                                                            marker = dict(colors = ['#07d7a7', '#ff9f00', '#ff1d29']))
                                                  ]
                                              }
                                              )], className="six columns"),
@@ -113,11 +112,11 @@ layout = html.Div([  print_button(),# page 1
                                                  'data': [
                                                      go.Table(
                                                          header=dict(values=list(dis_nec),
-                                                                     font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                                                                     fill=dict(color='C2D4FF')),
+                                                                     font=dict(family='Roboto', size=16, color='#143945'),
+                                                                     fill=dict(color='#ffffff')),
                                                          cells=dict(values=[dis_nec.Omoro, dis_nec.Gulu, dis_nec.Pader],
-                                                                    fill=dict(color='#F5F8FF'),
-                                                                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                                                    fill=dict(color='#ffffff'),
+                                                                    font=dict(family='Roboto', size=14, color='#333333'),
                                                                     align=['left'] * 5
                                                                     ))
                                                  ]
@@ -126,13 +125,14 @@ layout = html.Div([  print_button(),# page 1
                          html.Div([dcc.Graph(id = 'piechart-2',
                                              figure ={
                                                  'data':[
-                                                     go.Pie(labels=list(dis_eq), values=[int(dis_nec.Omoro), int(dis_nec.Gulu), int(dis_nec.Pader)])
+                                                     go.Pie(labels=list(dis_eq), values=[int(dis_nec.Omoro), int(dis_nec.Gulu), int(dis_nec.Pader)],
+                                                            marker=dict(colors=['#07d7a7', '#ff9f00', '#ff1d29']))
                                                  ]
                                              }
                                              )], className="six columns"),
 
                      ], className="row"),
-                     html.H2('Gender'),
+                     html.H2('Total beneficiaries reached by Gender'),
                      html.H3('EQUATOR SEEDS'),
                      html.Div([
                          html.Div([dcc.Graph(id = 'summary-table-3',
@@ -140,11 +140,11 @@ layout = html.Div([  print_button(),# page 1
                                                  'data':[
                                                      go.Table(
                                                          header=dict(values = list(gender_eq),
-                                                                     font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                                                                     fill=dict(color='C2D4FF')),
+                                                                     font=dict(family='Roboto', size=16, color='#143945'),
+                                                                     fill=dict(color='#ffffff')),
                                                          cells=dict(values=[gender_eq.Male, gender_eq.Female],
-                                                                    fill=dict(color='#F5F8FF'),
-                                                                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                                                    fill=dict(color='#ffffff'),
+                                                                    font=dict(family='Roboto', size=14, color='#333333'),
                                                                     align=['left'] * 5
                                                                     ))
                                                  ]
@@ -153,7 +153,9 @@ layout = html.Div([  print_button(),# page 1
                          html.Div([dcc.Graph(id = 'piechart',
                                              figure ={
                                                  'data':[
-                                                     go.Pie(labels=list(gender_eq), values=[int(gender_eq.Male), int(gender_eq.Female)])
+                                                     go.Pie(labels=list(gender_eq), values=[int(gender_eq.Male), int(gender_eq.Female)],
+                                                            marker=dict(
+                                                                colors=['#07d7a7', '#ff9f00']))
                                                  ]
                                              }
                                              )], className="six columns"),
@@ -166,11 +168,11 @@ layout = html.Div([  print_button(),# page 1
                                                  'data': [
                                                      go.Table(
                                                          header=dict(values=list(gender_nec),
-                                                                     font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                                                                     fill=dict(color='C2D4FF')),
+                                                                     font=dict(family='Roboto', size=16, color='#143945'),
+                                                                     fill=dict(color='#ffffff')),
                                                          cells=dict(values=[gender_nec.Male, gender_nec.Female],
-                                                                    fill=dict(color='#F5F8FF'),
-                                                                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                                                                    fill=dict(color='#ffffff'),
+                                                                    font=dict(family='Roboto', size=14, color='#333333'),
                                                                     align=['left'] * 5
                                                                     ))
                                                  ]
@@ -179,7 +181,9 @@ layout = html.Div([  print_button(),# page 1
                          html.Div([dcc.Graph(id = 'piechart-4',
                                              figure ={
                                                  'data':[
-                                                     go.Pie(labels=list(gender_nec), values=[int(gender_nec.Male), int(gender_nec.Female)])
+                                                     go.Pie(labels=list(gender_nec), values=[int(gender_nec.Male), int(gender_nec.Female)],
+                                                            marker=dict(
+                                                                colors=['#07d7a7', '#ff9f00']))
                                                  ]
                                              }
                                              )], className="six columns"),

@@ -49,7 +49,7 @@ def get_header():
 
         html.Div([
             html.H5(
-                'TolaReports: MEL')
+                'TolaData Custom Report')
         ], className="twelve columns padded")
 
     ], className="row gs-header gs-text-header")
@@ -65,8 +65,8 @@ layout = html.Div([
         html.Br([]),
         get_menu(),
     ]),
-    html.H1('Partner Progress Report'),
-    html.Div('Please select Year'),
+    html.H1('Partner Progress Report: EQUATOR SEEDS'),
+    html.H5('Please select Year'),
 
     dcc.Dropdown(
         value='2017',
@@ -75,7 +75,7 @@ layout = html.Div([
         id='dropdown-year',
         placeholder="Select Year",
     ),
-    html.Div('Please select Month'),
+    html.H5('Please select Month'),
     dcc.Dropdown(
         value='December',
         options=[{'label': i, 'value': i} for i in list(a)],
@@ -92,7 +92,7 @@ layout = html.Div([
     dcc.Graph(id = 'eq-table-1-1'),
     html.H3('Disaggregated by indicators'),
     dcc.Graph(id = 'eq-table-1-2'),
-    html.Div('Please select Activity'),
+    html.H5('Please select Activity'),
     dcc.Dropdown(
         value='id mob',
         options=[{'label': i, 'value': i} for i in list(activity_arr)],
@@ -111,7 +111,7 @@ layout = html.Div([
 
 
 
-    ])
+])
 
 @app.callback(Output('intermediate-value-eq', 'children'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def common_table(month, year):
@@ -234,16 +234,22 @@ def update_graph(cleaned_data):
             y = y1,
             name = 'achieved',
             marker = go.Marker(
-                color = 'rgb(55,83,109)'
+                color = '#07d7a7'
 
             )
 
+
         ),
-        go.Bar(
-            x = indname,
-            y = y2,
-            name = 'target'
-        )
+            go.Bar(
+                x = indname,
+                y = y2,
+                name = 'target',
+                marker=go.Marker(
+                    color='#ff9f00'
+
+                )
+
+            )
         ]
     }
 
@@ -348,7 +354,7 @@ def update_new_tab(cleaned_data, activity):
 
 @app.callback(Output('eq-table-2-2', 'figure'),[Input('intermediate-value-eq', 'children'), Input('dropdown-activity', 'value')])
 def update_second_tab(cleaned_data, activity):
-# saving the file as temporary one as the ff does not display the row names
+    # saving the file as temporary one as the ff does not display the row names
     df_display = pd.read_json(cleaned_data, orient='split')
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
     df_display = df_display[df_display['Activity'] == activity]

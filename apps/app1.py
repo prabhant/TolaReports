@@ -37,7 +37,7 @@ def get_header():
 
         html.Div([
             html.H5(
-                'TolaReports: MEL')
+                'TolaData Custom Report')
         ], className="twelve columns padded")
 
     ], className="row gs-header gs-text-header")
@@ -64,8 +64,8 @@ layout = html.Div([ print_button(),
                         html.Br([]),
                         get_menu(),
                     ]),
-                    html.H1('Partner Progress Report'),
-                    html.Div('Please select Year'),
+                    html.H1('Partner Progress Report: NECPA'),
+                    html.H5('Please select Year'),
 
                     dcc.Dropdown(
                         value='2017',
@@ -74,7 +74,7 @@ layout = html.Div([ print_button(),
                         id='dropdown-year',
                         placeholder="Select Year",
                     ),
-                    html.Div('Please select Month'),
+                    html.H5('Please select Month'),
                     dcc.Dropdown(
                         value='July',
                         options=[{'label': i, 'value': i} for i in list(a)],
@@ -91,7 +91,7 @@ layout = html.Div([ print_button(),
                     dcc.Graph(id = 'table-1-1'),
                     html.H3('Disaggregated by indicators'),
                     dcc.Graph(id = 'table-1-2'),
-                    html.Div('Please select Activity'),
+                    html.H5('Please select Activity'),
                     dcc.Dropdown(
                         value='id mob',
                         options=[{'label': i, 'value': i} for i in list(activity_arr)],
@@ -225,7 +225,7 @@ def update_graph(cleaned_data):
             y = y1,
             name = 'achieved',
             marker = go.Marker(
-                color = 'rgb(55,83,109)'
+                color = '#07d7a7'
 
             )
 
@@ -233,7 +233,11 @@ def update_graph(cleaned_data):
             go.Bar(
                 x = indname,
                 y = y2,
-                name = 'target'
+                name = 'target',
+                marker = go.Marker(
+                    color='#ff9f00'
+
+    )
             )
         ]
     }
@@ -249,12 +253,12 @@ def update_table(cleaned_data):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40, 40, 40, 40,40],
                 header=dict(values=list(df_t.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                    fill=dict(color='#F5F8FF'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
+                    fill=dict(color='#ffffff'),
                     align=['left'] * 5)
             )
         ]
@@ -297,12 +301,12 @@ def update_table(cleaned_data):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40],
                 header=dict(values=list(df_t.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
@@ -325,12 +329,12 @@ def update_new_tab(cleaned_data, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df_display.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
@@ -385,12 +389,12 @@ def update_second_tab(cleaned_data, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df2.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
