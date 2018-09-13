@@ -37,7 +37,7 @@ def get_header():
 
         html.Div([
             html.H5(
-                'TolaReports: MEL')
+                'TolaData Custom Report')
         ], className="twelve columns padded")
 
     ], className="row gs-header gs-text-header")
@@ -56,61 +56,61 @@ def get_menu():
 
 
 layout = html.Div([ print_button(),
-    html.Div([
+                    html.Div([
 
-        # Header
-        get_logo(),
-        get_header(),
-        html.Br([]),
-        get_menu(),
-    ]),
-    html.H1('Partner Progress Report'),
-    html.Div('Please select Year'),
+                        # Header
+                        get_logo(),
+                        get_header(),
+                        html.Br([]),
+                        get_menu(),
+                    ]),
+                    html.H2('Partner Progress Report: NECPA'),
+                    html.H5('Please select Year'),
 
-    dcc.Dropdown(
-        value='2017',
-        options=[{'label': i, 'value': i} for i in ['2017', '2018']],
-        multi=False,
-        id='dropdown-year',
-        placeholder="Select Year",
-    ),
-    html.Div('Please select Month'),
-    dcc.Dropdown(
-        value='July',
-        options=[{'label': i, 'value': i} for i in list(a)],
-        placeholder="Select Month",
-        multi=False,
-        id='dropdown-month',
+                    dcc.Dropdown(
+                        value='2017',
+                        options=[{'label': i, 'value': i} for i in ['2017', '2018']],
+                        multi=False,
+                        id='dropdown-year',
+                        placeholder="Select Year",
+                    ),
+                    html.H5('Please select Month'),
+                    dcc.Dropdown(
+                        value='July',
+                        options=[{'label': i, 'value': i} for i in list(a)],
+                        placeholder="Select Month",
+                        multi=False,
+                        id='dropdown-month',
 
-    ),
+                    ),
 
-    html.H2('Indicator actual results against target'),
-    dcc.Graph(id = 'my-graph'),# bar graph
-    html.H2('Indicator actual results by location, sex, age'),
-    html.H3('Aggregated by indicators'),
-    dcc.Graph(id = 'table-1-1'),
-    html.H3('Disaggregated by indicators'),
-    dcc.Graph(id = 'table-1-2'),
-    html.Div('Please select Activity'),
-    dcc.Dropdown(
-        value='id mob',
-        options=[{'label': i, 'value': i} for i in list(activity_arr)],
-        multi=False,
-        id='dropdown-activity',
-        placeholder="Select Activity",
-    ),
-    html.H2('Overall beneficiary reached by location, sex and age'),
-    html.H3('Aggregated reach data'),
-    dcc.Graph(id='table-2-2'),  # Table 2
-    html.H3('Disaggregated reach data'),
-    dcc.Graph(id='table-2-1'),# table 1
-    html.Div(id='intermediate-value', style={'display': 'none'}),
-    html.Div(id='intermediate-value-1', style={'display': 'none'})
-
-
+                    html.H2('Indicator actual results against target'),
+                    dcc.Graph(id = 'my-graph'),# bar graph
+                    html.H2('Indicator actual results by location, sex, age'),
+                    html.H3('Aggregated by indicators'),
+                    dcc.Graph(id = 'table-1-1'),
+                    html.H3('Disaggregated by indicators'),
+                    dcc.Graph(id = 'table-1-2'),
+                    html.H5('Please select Activity'),
+                    dcc.Dropdown(
+                        value='id mob',
+                        options=[{'label': i, 'value': i} for i in list(activity_arr)],
+                        multi=False,
+                        id='dropdown-activity',
+                        placeholder="Select Activity",
+                    ),
+                    html.H2('Overall beneficiary reached by location, sex and age'),
+                    html.H3('Aggregated reach data'),
+                    dcc.Graph(id='table-2-2'),  # Table 2
+                    html.H3('Disaggregated reach data'),
+                    dcc.Graph(id='table-2-1'),# table 1
+                    html.Div(id='intermediate-value', style={'display': 'none'}),
+                    html.Div(id='intermediate-value-1', style={'display': 'none'})
 
 
-    ])
+
+
+                    ])
 @app.callback(Output('intermediate-value', 'children'), [Input('dropdown-month', 'value'),Input('dropdown-year', 'value')])
 def common_table(month, year):
     df = pd.read_csv('data/necpa.csv')
@@ -201,6 +201,9 @@ def section_one_table(cleaned_data):
     df_main['Indicator'] = indi_arr
     df_t = df_main
     cols = ['Indicator', 'Male', 'Female', 'Gulu', 'Omoro', 'Pader', '15-18', '19-24', '25+']
+    df2 = df_tmp
+    if(len(df2)==0):
+        return df2.to_json(date_format='iso', orient='split')
     df_t = df_t[cols]
     df_t.loc[:, 'Total Actual'] = df_t['Male']+df_t['Female']
     target_arr = []
@@ -216,6 +219,15 @@ def section_one_table(cleaned_data):
 @app.callback(Output('my-graph', 'figure'), [Input('intermediate-value-1', 'children')])
 def update_graph(cleaned_data):
     df_t = pd.read_json(cleaned_data, orient='split')
+    print("lenght of df is ",len(df_t))
+    if(len(df_t)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     y1 = list(df_t['Total Actual'])
     y2 = list(df_t['Total Target'])
     indname = list(df_t['Indicator'])
@@ -225,22 +237,34 @@ def update_graph(cleaned_data):
             y = y1,
             name = 'achieved',
             marker = go.Marker(
-                color = 'rgb(55,83,109)'
+                color = '#07d7a7'
 
             )
 
         ),
-        go.Bar(
-            x = indname,
-            y = y2,
-            name = 'target'
-        )
+            go.Bar(
+                x = indname,
+                y = y2,
+                name = 'target',
+                marker = go.Marker(
+                    color='#ff9f00'
+
+    )
+            )
         ]
     }
 
 @app.callback(Output('table-1-1', 'figure'), [Input('intermediate-value-1', 'children')])
 def update_table(cleaned_data):
     df_t = pd.read_json(cleaned_data, orient='split')
+    if(len(df_t)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     vals = []
     for i in range(len(list(df_t))):
         vals.append(df_t.iloc[:, i])
@@ -249,12 +273,12 @@ def update_table(cleaned_data):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40, 40, 40, 40,40],
                 header=dict(values=list(df_t.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                    fill=dict(color='#F5F8FF'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
+                    fill=dict(color='#ffffff'),
                     align=['left'] * 5)
             )
         ]
@@ -264,8 +288,16 @@ def update_table(cleaned_data):
 @app.callback(Output('table-1-2', 'figure'), [Input('intermediate-value', 'children')])
 def update_table(cleaned_data):
     df_display = pd.read_json(cleaned_data, orient='split')
+    if(len(df_display)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     df_display = df_display[['Activity', 'Gender', 'Age cohorts', 'District', '0']]
-    # df_display = df_display[df_display['Activity'] == activity]
+    #df_display = df_display[df_display['Activity'] == activity]
     df_display['Sum'] = df_display['0']
     indilist = pd.read_csv('data/indicators_necpa.csv')
     indicator_map = ['nursery management', 'phh', 'marketing', 'crop management', 'seed distribution']
@@ -297,12 +329,12 @@ def update_table(cleaned_data):
             go.Table(
                 columnwidth=[150, 40, 40, 40, 40],
                 header=dict(values=list(df_t.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
@@ -313,6 +345,14 @@ def update_table(cleaned_data):
 def update_new_tab(cleaned_data, activity):
     df_display = pd.read_json(cleaned_data, orient='split')
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
+    if(len(df_display)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     df_display = df_display[df_display['Activity'] == activity]
     df_display = df_display[['District','Gender', 'Age cohorts','0']]
     df_display['Sum'] = df_display['0']
@@ -325,12 +365,12 @@ def update_new_tab(cleaned_data, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df_display.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]
@@ -339,10 +379,18 @@ def update_new_tab(cleaned_data, activity):
 
 @app.callback(Output('table-2-2', 'figure'),[Input('intermediate-value', 'children'), Input('dropdown-activity', 'value')])
 def update_second_tab(cleaned_data, activity):
-# saving the file as temporary one as the ff does not display the row names
+    # saving the file as temporary one as the ff does not display the row names
     df_display = pd.read_json(cleaned_data, orient='split')
+    if(len(df_display)==0):
+        return {
+            'data':
+                [go.Table(
+                    header = dict(values = ['Message']),
+                    cells = dict(values = [['No data']])
+                )]
+        }
     df_display = df_display[['Activity', 'Gender', 'Age cohorts','District', '0']]
-    df_display = df_display[df_display['Activity'] == activity]
+    df_display = df_display[df_display['Activity'] == str(activity)]
     df_display = df_display[['District','Gender', 'Age cohorts','0']]
     df_display['Sum'] = df_display['0']
     df_display = df_display[['District', 'Gender', 'Age cohorts', 'Sum']]
@@ -385,12 +433,12 @@ def update_second_tab(cleaned_data, activity):
         'data': [
             go.Table(
                 header=dict(values=list(df2.columns),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
+                            font=dict(family='Roboto', size=16, color='#143945'),
+                            fill=dict(color='#ffffff')),
                 cells=dict(
                     values=vals,
-                    fill=dict(color='#F5F8FF'),
-                    font=dict(family='Roboto', size=14, color='#7f7f7f'),
+                    fill=dict(color='#ffffff'),
+                    font=dict(family='Roboto', size=14, color='#333333'),
                     align=['left'] * 5)
             )
         ]

@@ -61,9 +61,9 @@ app.layout = html.Div([
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/apps/app1':
-         return app1.layout
+        return app1.layout
     elif pathname == '/apps/app2':
-         return app2.layout
+        return app2.layout
     else:
         return landingapp.layout
 

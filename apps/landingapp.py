@@ -31,7 +31,7 @@ def get_header():
 
         html.Div([
             html.H5(
-                'TolaReports: MEL')
+                'TolaData Custom Report')
         ], className="twelve columns padded")
 
     ], className="row gs-header gs-text-header")
@@ -41,11 +41,10 @@ def get_header():
 def get_menu():
     menu = html.Div([
 
-        dcc.Link('Overview   ', href='/apps/landingapp', className="tab first"),
-
-        dcc.Link('NECPA', href='/apps/app1', className="tab"),
+        html.H5(dcc.Link('Overview   ', href='/apps/landingapp', className="tab first")),
+        dcc.Link('NECPA', href='/apps/app1', className="tab",style={"color": "red", "text-decoration": "none","size": "20"}),
         dcc.Link('EQUATOR', href='/apps/app2', className="tab")
-    ], className="row ")
+                ], className="row ")
     return menu
 
 df_eqt = pd.read_csv('data/equator.csv')
@@ -63,151 +62,45 @@ gender_nec = pd.DataFrame(gender_nec)
 gender_eq = gender_eq.transpose()
 gender_nec = gender_nec.transpose()
 
-
 layout = html.Div([  print_button(),# page 1
 
 
-        html.Div([
+                     html.Div([
 
-            # Header
-            get_logo(),
-            get_header(),
-            html.Br([]),
-            get_menu(),
-            ]),
-
-
-    html.H2('District'),
-    html.H3('Partner Equator'),
-html.Div([
-    html.Div([dcc.Graph(id = 'summary-table-1',
-              figure ={
-                  'data':[
-                      go.Table(
-                          header=dict(values = list(dis_eq),
-                          font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                          fill=dict(color='C2D4FF')
-                      ),
-                          cells=dict(values=[dis_eq.Pader, dis_eq.Omoro, dis_eq.Gulu],
-                                     fill=dict(color='#F5F8FF'),
-                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                                     align=['left'] * 5
-                                     ))
-                  ]
-              }
-    )], className="six columns"),
-    html.Div([dcc.Graph(id = 'piechart-1',
-                  figure ={
-                      'data':[
-                          go.Pie(labels=list(dis_eq), values=[int(dis_eq.Pader), int(dis_eq.Omoro), int(dis_eq.Gulu)])
-                      ]
-                  }
-        )], className="six columns"),
-
-    ], className="row"),
-    html.H3('Partner NECPA'),
-html.Div([
-    html.Div([dcc.Graph(id='summary-table-2',
-              figure={
-                  'data': [
-                      go.Table(
-                          header=dict(values=list(dis_nec),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
-                          cells=dict(values=[dis_nec.Omoro, dis_nec.Gulu, dis_nec.Pader],
-                                     fill=dict(color='#F5F8FF'),
-                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                                     align=['left'] * 5
-                                     ))
-                  ]
-              }
-              )], className="six columns"),
-    html.Div([dcc.Graph(id = 'piechart-2',
-                  figure ={
-                      'data':[
-                          go.Pie(labels=list(dis_eq), values=[int(dis_nec.Omoro), int(dis_nec.Gulu), int(dis_nec.Pader)])
-                      ]
-                  }
-        )], className="six columns"),
-
-    ], className="row"),
-html.H2('Gender'),
-html.H3('Partner Equator'),
-html.Div([
-    html.Div([dcc.Graph(id = 'summary-table-3',
-              figure ={
-                  'data':[
-                      go.Table(
-                          header=dict(values = list(gender_eq),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
-                          cells=dict(values=[gender_eq.Male, gender_eq.Female],
-                                     fill=dict(color='#F5F8FF'),
-                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                                     align=['left'] * 5
-                                     ))
-                  ]
-              }
-    )], className="six columns"),
-    html.Div([dcc.Graph(id = 'piechart',
-                  figure ={
-                      'data':[
-                          go.Pie(labels=list(gender_eq), values=[int(gender_eq.Male), int(gender_eq.Female)])
-                      ]
-                  }
-        )], className="six columns"),
-
-    ], className="row"),
-    html.H3('Partner NECPA'),
-html.Div([
-    html.Div([dcc.Graph(id='summary-table-4',
-              figure={
-                  'data': [
-                      go.Table(
-                          header=dict(values=list(gender_nec),
-                            font=dict(family='Roboto', size=16, color='#7f7f7f'),
-                            fill=dict(color='C2D4FF')),
-                          cells=dict(values=[gender_nec.Male, gender_nec.Female],
-                                     fill=dict(color='#F5F8FF'),
-                                     font=dict(family='Roboto', size=14, color='#7f7f7f'),
-                                     align=['left'] * 5
-                                     ))
-                  ]
-              }
-              )], className="six columns"),
-    html.Div([dcc.Graph(id = 'piechart-4',
-                  figure ={
-                      'data':[
-                          go.Pie(labels=list(gender_nec), values=[int(gender_nec.Male), int(gender_nec.Female)])
-                      ]
-                  }
-        )], className="six columns"),
-
-    ], className="row"),
+                         # Header
+                         get_logo(),
+                         get_header(),
+                         html.Br([]),
+                         get_menu(),
+                     ]),
 
 
-])
-# @app.callback(Output('summary-table'),[Input()])
-# def summary_table():
+                     html.H2('Total beneficiaries reached by Districts'),
+                     html.Div([
+                         html.Div([dcc.Graph(id = 'piechart-1',
+                                             figure ={
+                                                 'data':[
+                                                     go.Pie(labels=list(dis_eq), values=[int(dis_eq.Pader)+int(dis_nec.Pader), int(dis_eq.Omoro)+int(dis_nec.Omoro), int(dis_eq.Gulu)+int(dis_nec.Gulu)],
+                                                            marker = dict(colors = ['#07d7a7', '#ff9f00', '#ff1d29']))
+                                                 ]
+                                             }
+                                             )], className="six columns"),
 
+                     ], className="row"),
+                     html.H2('Total beneficiaries reached by Gender'),
+                     html.Div([
+                         html.Div([dcc.Graph(id = 'piechart',
+                                             figure ={
+                                                 'data':[
+                                                     go.Pie(labels=list(gender_eq), values=[int(gender_eq.Male)+int(gender_nec.Male), int(gender_eq.Female)+int(gender_nec.Female)],
+                                                            marker=dict(
+                                                                colors=['#07d7a7', '#ff9f00']))
+                                                 ]
+                                             }
+                                             )], className="six columns"),
 
-
-
-
-external_css = ["https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",
-                "https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
-                "//fonts.googleapis.com/css?family=Raleway:400,300,600",
-                "https://codepen.io/bcd/pen/KQrXdb.css",
-                "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"]
-
-for css in external_css:
-    app.css.append_css({"external_url": css})
-
-external_js = ["https://code.jquery.com/jquery-3.2.1.min.js",
-               "https://codepen.io/bcd/pen/YaXojL.js"]
-
-for js in external_js:
-    app.scripts.append_script({"external_url": js})
+                     ], className="row"),
+                     ])
 
 
 if __name__ == '__main__':
