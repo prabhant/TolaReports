@@ -62,7 +62,6 @@ gender_nec = pd.DataFrame(gender_nec)
 gender_eq = gender_eq.transpose()
 gender_nec = gender_nec.transpose()
 
-
 layout = html.Div([  print_button(),# page 1
 
 
@@ -77,83 +76,23 @@ layout = html.Div([  print_button(),# page 1
 
 
                      html.H2('Total beneficiaries reached by Districts'),
-                     html.H3('EQUATOR SEEDS'),
                      html.Div([
-                         html.Div([dcc.Graph(id = 'summary-table-1',
-                                             figure ={
-                                                 'data':[
-                                                     go.Table(
-                                                         header=dict(values = list(dis_eq),
-                                                                     font=dict(family='Roboto', size=16, color='#143945'),
-                                                                     fill=dict(color='#ffffff')
-                                                                     ),
-                                                         cells=dict(values=[dis_eq.Pader, dis_eq.Omoro, dis_eq.Gulu],
-                                                                    fill=dict(color='#ffffff'),
-                                                                    font=dict(family='Roboto', size=14, color='#333333'),
-                                                                    align=['left'] * 5
-                                                                    ))
-                                                 ]
-                                             }
-                                             )], className="six columns"),
                          html.Div([dcc.Graph(id = 'piechart-1',
                                              figure ={
                                                  'data':[
-                                                     go.Pie(labels=list(dis_eq), values=[int(dis_eq.Pader), int(dis_eq.Omoro), int(dis_eq.Gulu)],
+                                                     go.Pie(labels=list(dis_eq), values=[int(dis_eq.Pader)+int(dis_nec.Pader), int(dis_eq.Omoro)+int(dis_nec.Omoro), int(dis_eq.Gulu)+int(dis_nec.Gulu)],
                                                             marker = dict(colors = ['#07d7a7', '#ff9f00', '#ff1d29']))
                                                  ]
                                              }
                                              )], className="six columns"),
 
                      ], className="row"),
-                     html.H3('NECPA'),
-                     html.Div([
-                         html.Div([dcc.Graph(id='summary-table-2',
-                                             figure={
-                                                 'data': [
-                                                     go.Table(
-                                                         header=dict(values=list(dis_nec),
-                                                                     font=dict(family='Roboto', size=16, color='#143945'),
-                                                                     fill=dict(color='#ffffff')),
-                                                         cells=dict(values=[dis_nec.Omoro, dis_nec.Gulu, dis_nec.Pader],
-                                                                    fill=dict(color='#ffffff'),
-                                                                    font=dict(family='Roboto', size=14, color='#333333'),
-                                                                    align=['left'] * 5
-                                                                    ))
-                                                 ]
-                                             }
-                                             )], className="six columns"),
-                         html.Div([dcc.Graph(id = 'piechart-2',
-                                             figure ={
-                                                 'data':[
-                                                     go.Pie(labels=list(dis_eq), values=[int(dis_nec.Omoro), int(dis_nec.Gulu), int(dis_nec.Pader)],
-                                                            marker=dict(colors=['#07d7a7', '#ff9f00', '#ff1d29']))
-                                                 ]
-                                             }
-                                             )], className="six columns"),
-
-                     ], className="row"),
                      html.H2('Total beneficiaries reached by Gender'),
-                     html.H3('EQUATOR SEEDS'),
                      html.Div([
-                         html.Div([dcc.Graph(id = 'summary-table-3',
-                                             figure ={
-                                                 'data':[
-                                                     go.Table(
-                                                         header=dict(values = list(gender_eq),
-                                                                     font=dict(family='Roboto', size=16, color='#143945'),
-                                                                     fill=dict(color='#ffffff')),
-                                                         cells=dict(values=[gender_eq.Male, gender_eq.Female],
-                                                                    fill=dict(color='#ffffff'),
-                                                                    font=dict(family='Roboto', size=14, color='#333333'),
-                                                                    align=['left'] * 5
-                                                                    ))
-                                                 ]
-                                             }
-                                             )], className="six columns"),
                          html.Div([dcc.Graph(id = 'piechart',
                                              figure ={
                                                  'data':[
-                                                     go.Pie(labels=list(gender_eq), values=[int(gender_eq.Male), int(gender_eq.Female)],
+                                                     go.Pie(labels=list(gender_eq), values=[int(gender_eq.Male)+int(gender_nec.Male), int(gender_eq.Female)+int(gender_nec.Female)],
                                                             marker=dict(
                                                                 colors=['#07d7a7', '#ff9f00']))
                                                  ]
@@ -161,36 +100,6 @@ layout = html.Div([  print_button(),# page 1
                                              )], className="six columns"),
 
                      ], className="row"),
-                     html.H3('Partner NECPA'),
-                     html.Div([
-                         html.Div([dcc.Graph(id='summary-table-4',
-                                             figure={
-                                                 'data': [
-                                                     go.Table(
-                                                         header=dict(values=list(gender_nec),
-                                                                     font=dict(family='Roboto', size=16, color='#143945'),
-                                                                     fill=dict(color='#ffffff')),
-                                                         cells=dict(values=[gender_nec.Male, gender_nec.Female],
-                                                                    fill=dict(color='#ffffff'),
-                                                                    font=dict(family='Roboto', size=14, color='#333333'),
-                                                                    align=['left'] * 5
-                                                                    ))
-                                                 ]
-                                             }
-                                             )], className="six columns"),
-                         html.Div([dcc.Graph(id = 'piechart-4',
-                                             figure ={
-                                                 'data':[
-                                                     go.Pie(labels=list(gender_nec), values=[int(gender_nec.Male), int(gender_nec.Female)],
-                                                            marker=dict(
-                                                                colors=['#07d7a7', '#ff9f00']))
-                                                 ]
-                                             }
-                                             )], className="six columns"),
-
-                     ], className="row"),
-
-
                      ])
 
 

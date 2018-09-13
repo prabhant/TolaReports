@@ -64,7 +64,7 @@ layout = html.Div([ print_button(),
                         html.Br([]),
                         get_menu(),
                     ]),
-                    html.H1('Partner Progress Report: NECPA'),
+                    html.H2('Partner Progress Report: NECPA'),
                     html.H5('Please select Year'),
 
                     dcc.Dropdown(
